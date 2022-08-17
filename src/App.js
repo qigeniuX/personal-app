@@ -9,7 +9,9 @@ import DemoForm from './views/DemoForm';
 import axios from 'axios';
 import TsTest from './views/TsTest';
 
-const { Header, Sider, Content } = Layout
+const { Header, Sider, Content } = 
+
+console.log(123)
 
 function App() {
   const [currentView, setCurrentView] = useState()
