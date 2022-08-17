@@ -9,9 +9,7 @@ import DemoForm from './views/DemoForm';
 import axios from 'axios';
 import TsTest from './views/TsTest';
 
-const { Header, Sider, Content } = 
-
-console.log(123)
+const { Header, Sider, Content } = Layout
 
 function App() {
   const [currentView, setCurrentView] = useState()
