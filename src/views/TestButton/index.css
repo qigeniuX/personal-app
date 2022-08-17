@@ -1,0 +1,9 @@
+.no-arrow .ant-popover-arrow {
+    display: none;
+}
+
+.no-arrow .ant-popover-inner {
+    border-radius: 8px;
+
+    box-shadow: unset;
+}
