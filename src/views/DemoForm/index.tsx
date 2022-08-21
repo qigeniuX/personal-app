@@ -203,7 +203,6 @@ const DemoForm:React.FC = () => {
                       options={optionsWithDisabled}
                     />
                   </Form.Item>
->>>>>>> 0585e1a4b1ee56293c40bcadc6b20da54805a09d
 
                   <Form.Item
                     label='城市名'
@@ -255,30 +254,30 @@ const DemoForm:React.FC = () => {
                         <TreeNode value='Roba' title='罗芭'/>                                                                                                                                                                                                   
                       </TreeNode>
 
-              <TreeNode value='lsq' title='李思齐' selectable={false}>
-                <TreeNode value='PowerKids' title='动力小子'/>  
-                <TreeNode value='Fuse' title='暴雷'/>                                                                                                                                                                                                     
-              </TreeNode>
+                      <TreeNode value='lsq' title='李思齐' selectable={false}>
+                        <TreeNode value='PowerKids' title='动力小子'/>  
+                        <TreeNode value='Fuse' title='暴雷'/>                                                                                                                                                                                                     
+                      </TreeNode>
 
-              <TreeNode value='szy' title='杰克屎' selectable={false}>
-                <TreeNode value='Mirage' title='幻象'/>  
-                <TreeNode value='Wattson' title='沃特森'/>     
-                <TreeNode value='Crypto' title='密客'/>                                                                                                                                                                                                    
-              </TreeNode>
-            </TreeSelect>
-          </Form.Item>
+                      <TreeNode value='szy' title='杰克屎' selectable={false}>
+                        <TreeNode value='Mirage' title='幻象'/>  
+                        <TreeNode value='Wattson' title='沃特森'/>     
+                        <TreeNode value='Crypto' title='密客'/>                                                                                                                                                                                                    
+                      </TreeNode>
+                    </TreeSelect>
+                  </Form.Item>
 
-          {/* Upload */}
-          <Form.Item
-            label='请上传你的自拍'
-            name='playerPhoto'
-            valuePropName='fileList'
-            getValueFromEvent={normFile}
-          >
-            <Upload>
-              <Button icon={<UploadOutlined />}>Upload png only</Button>
-            </Upload>
-          </Form.Item>
+                  {/* Upload */}
+                  <Form.Item
+                    label='请上传你的自拍'
+                    name='playerPhoto'
+                    valuePropName='fileList'
+                    getValueFromEvent={normFile}
+                  >
+                    <Upload>
+                      <Button icon={<UploadOutlined />}>Upload png only</Button>
+                    </Upload>
+                  </Form.Item>
 
           <Form.Item>
               <Button htmlType='submit'>提交</Button>
