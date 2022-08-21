@@ -5,10 +5,19 @@ import reportWebVitals from './reportWebVitals';
 import 'antd/dist/antd.min.css'
 import App from './App';
 
+export const GlobalContext = React.createContext({
+  userName: 'li',
+})
+
+// @ts-ignore
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <App />
+  <GlobalContext.Provider value={{
+    userName: 'lii'
+  }}>
+    <App />
+  </GlobalContext.Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function
