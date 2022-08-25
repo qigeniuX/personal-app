@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import MutiChart from './views/MutiChart';
 import YangHuiTringle from './views/YangHuiTringle';
@@ -8,6 +8,7 @@ import DemoList from './views/DemoList';
 import DemoForm from './views/DemoForm';
 import axios from 'axios';
 import TsTest from './views/TsTest';
+import TodoList from 'views/TodoList';
 
 const { Header, Sider, Content } = Layout
 
@@ -24,11 +25,12 @@ function App() {
     { label: '按钮*3', key: 'testButton', view: <TestButton /> },
     { label: '演示列表', key: 'demoList', view: <DemoList /> },
     { label: '演示表单', key: 'demoForm', view:  <DemoForm /> },
-    { label: '测试ts', key: 'tsTest', view: <TsTest /> }
+    { label: '测试ts', key: 'tsTest', view: <TsTest /> },
+    { label: 'TODO列表', key: 'todoList', view: <TodoList /> }
   ]
 
-  const handleMenuClick = (e) => {
-    const currentItem = items.find((item) => item.key === e.key)
+  const handleMenuClick = (e : any) => {
+    const currentItem:any = items.find((item) => item.key === e.key)
   
     setCurrentView(currentItem.view)
   }
