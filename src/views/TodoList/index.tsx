@@ -4,12 +4,11 @@ import moment from "moment"
 import React, { useEffect, useState } from "react"
 import { render } from "react-dom"
 import { v4 as uuidv4 } from 'uuid'
+import { cloneDeep } from 'lodash-es'
 
-// TODO: 解决input不能正确输入中文的bug 
 // TODO: 添加一个状态 （仅仅是新任务list）表示是新增的还是撤回的
-// TODO: 操作栏添加一个修改按钮 点击后可以修改任务名 table上面的字段直接变成input进行修改 修改按钮变成确认按钮 其余按钮disabled 确认后修改完成 其他按钮复原
 // TODO: 添加一个“上次修改时间” 修改后展示修改成功的时间 如果是添加或者撤回则显示添加或者撤回时间
-
+ 
 // 比较拓展的TODO
 // TODO: 添加一个card 里面是快捷任务 点一下就可以进入未完成任务 输入input右边增加一个按钮（添加快捷任务） 点击后会进入card
 // TODO: 添加一个输入框 输入任务的期望完成时间 分两种 1. 时间跨度 （如 下周一 ~ 下周日） 2. 时间到期 （如24小时之后到期）
@@ -21,15 +20,31 @@ const TodoList = () => {
 	const [taskData, setTaskData] = useState<any[]>([])
 	const [finishedTaskData, setFinishedTaskData] = useState<any[]>([])
   const [inputValue, setInputValue] = useState<string>('')
+  const [modifyInputValue, setModifyInputValue] = useState<string>('')
 
 	const newTaskColumns = [
 		{
 			title: '未完成任务',
 			dataIndex: 'theTask',
 			key: 'theTask',
+      width: 280,
       ellipsis: true,
-      width: 160,
-			// render:(text:any, record:any, index:number) => 
+			render: (text:any, record: any, index: number) => (
+        record.isEditing ?
+          <Input 
+            defaultValue={text} 
+            value={modifyInputValue} 
+            onChange={(e) => setModifyInputValue(e.target.value)}
+          /> :
+          <div style={{
+            maxWidth: 270,
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+           }
+          }
+          >{text}</div>
+      ) 
 		},
 		{
 			title: '添加时间',
@@ -44,10 +59,23 @@ const TodoList = () => {
 		{
 			title: '操作',
 			key: 'actions',
-			render:(text:any, record:any, index:number) => (
+			render:(text:any, record:any, index: number) => (
 				<>
-					<Button onClick={() => handleClickFinishedButton(index)}>完成</Button>
-					<Button onClick={() => handleClickDeleteButton(index)}>删除</Button>
+          {
+            record.isEditing ? (
+              <>
+                <Button type="primary" onClick={() => handleCompleteButtonClick(index)}>完成修改</Button> 
+                <Button onClick={() => {handleCancelButtonClick(index)}}>取消</Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={() => handleModifyButtonClick(index)}>修改</Button>
+                <Button danger onClick={() => handleClickDeleteButton(index)}>删除</Button>
+			      		<Button type="primary" onClick={() => handleClickFinishedButton(index)}>完成</Button> 
+              </>
+
+            )
+          }
 				</>
 			)
 		},
@@ -89,8 +117,12 @@ const TodoList = () => {
 
 		setFinishedTaskData(finData)
 		setTaskData(newData)
-
-    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(newData))
+    const dataForSave = cloneDeep(newData)
+    dataForSave.forEach((ele) => {
+      delete ele.isEditing
+    })
+    
+    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
     localStorage.setItem('todo_list__finished_tasks', JSON.stringify(finData))
 	}
 
@@ -105,7 +137,12 @@ const TodoList = () => {
 		setFinishedTaskData(finData)
 		setTaskData(newData)
 
-    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(newData))
+    const dataForSave = cloneDeep(newData)
+    dataForSave.forEach((ele) => {
+      delete ele.isEditing
+    })
+    
+    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
     localStorage.setItem('todo_list__finished_tasks', JSON.stringify(finData))
 	}
 
@@ -115,8 +152,59 @@ const TodoList = () => {
 		
 		setTaskData(deleteData)
 
-    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(deleteData))
+    const dataForSave = cloneDeep(deleteData)
+    dataForSave.forEach((ele) => {
+      delete ele.isEditing
+    })
+    
+    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
 	}
+
+  const handleModifyButtonClick = (index: number) => {
+    setModifyInputValue(taskData[index].theTask)
+
+    const newData = [...taskData]
+    newData[index].isEditing = true
+    
+    setTaskData(newData)
+
+    const dataForSave = cloneDeep(newData)
+    dataForSave.forEach((ele) => {
+      delete ele.isEditing
+    })
+    
+    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
+  }
+
+  const handleCompleteButtonClick = (index: number) => {
+    const newData = [...taskData]
+    newData[index].isEditing = false
+    newData[index].theTask = modifyInputValue
+
+    setTaskData(newData)
+
+    const dataForSave = cloneDeep(newData)
+    dataForSave.forEach((ele) => {
+      delete ele.isEditing
+    })
+    
+    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
+  }
+
+  const handleCancelButtonClick = (index: number) => {
+    const newData = [...taskData]
+    newData[index].isEditing = false
+
+    setTaskData(newData)
+
+    const dataForSave = cloneDeep(newData)
+    dataForSave.forEach((ele) => {
+      delete ele.isEditing
+    })
+
+    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
+
+  }
 
   // TODO: 添加类型
 	const addDatum = (value: any) => {
@@ -134,7 +222,12 @@ const TodoList = () => {
 		setTaskData(addTaskData)
     setInputValue('')
 
-    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(addTaskData))
+    const dataForSave = cloneDeep(addTaskData)
+    dataForSave.forEach((ele) => {
+      delete ele.isEditing
+    })
+
+    localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
 	}
 
   const handleInputSearchChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -143,13 +236,8 @@ const TodoList = () => {
 
       return
     }
-    if ((e.nativeEvent as any).data === null) {
-      setInputValue(inputValue.slice(0,inputValue.length -1))
 
-      return
-    }
-
-    setInputValue(inputValue + (e.nativeEvent as any).data)
+    setInputValue(e.target.value)
   }
 
   useEffect(() => {
@@ -173,9 +261,9 @@ const TodoList = () => {
       }}>
 				<Input.Search
 					placeholder="请输入今日任务" 
-					onSearch={addDatum}
 					enterButton='点我加数据'
           value={inputValue}
+					onSearch={addDatum}
           onChange={handleInputSearchChange}
           allowClear
 				/>
@@ -183,15 +271,17 @@ const TodoList = () => {
 
 			<Layout>
 				<Content>
-						<Table columns={newTaskColumns} dataSource={taskData}></Table>
-						<Table columns={finishedTaskColumns} 
-						dataSource={finishedTaskData} 
+						<Table columns={newTaskColumns} dataSource={taskData} />
+
+						<Table
+              columns={finishedTaskColumns} 
+						  dataSource={finishedTaskData} 
 						// onRow={record => {
 						// 	return {
 						// 		onMouseEnter: onMouseEnterEvent => {}
 						// 	}}
 						// }
-						></Table>
+						/>
 				</Content>
 			</Layout>
 		</Layout>
