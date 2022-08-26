@@ -11,7 +11,6 @@ import { Upload, message } from 'antd'
 import { UploadOutlined } from '@ant-design/icons';
 import { EventArgs, ValidateErrorEntity } from 'rc-field-form/lib/interface'
 
-import { GlobalContext } from '../../index'
 
 const { TreeNode } = TreeSelect
 
@@ -179,80 +178,80 @@ const DemoForm:React.FC = () => {
             <Input allowClear />
           </Form.Item>
 
-                  <Form.Item
-                    label="偏好定位"
-                    name="preferPositions"
-                  >
-                    <Checkbox.Group
-                      options={optionsManyCities}
-                    />
-                  </Form.Item>
+          <Form.Item
+            label="偏好定位"
+            name="preferPositions"
+          >
+            <Checkbox.Group
+              options={optionsManyCities}
+            />
+          </Form.Item>
 
-                  <Form.Item
-                    label="游戏时间"
-                    name="gameTimes"
-                  >
-                    <RangePicker />
-                  </Form.Item>
+          <Form.Item
+            label="游戏时间"
+            name="gameTimes"
+          >
+            <RangePicker />
+          </Form.Item>
 
-                  <Form.Item
-                    label="游戏名"
-                    name="gameName"
-                  >
-                    <Radio.Group
-                      options={optionsWithDisabled}
-                    />
-                  </Form.Item>
+          <Form.Item
+            label="游戏名"
+            name="gameName"
+          >
+            <Radio.Group
+              options={optionsWithDisabled}
+            />
+          </Form.Item>
 
-                  <Form.Item
-                    label='城市名'
-                    name='cityName'
-                  >
-                    <Cascader options={optionsCity} allowClear />
-                  </Form.Item>
+          <Form.Item
+            label='城市名'
+            name='cityName'
+          >
+            <Cascader options={optionsCity} allowClear />
+          </Form.Item>
 
-                  {/* InputNumber */}
+          {/* InputNumber */}
 
-                  {/* Switch */}
-                  <Form.Item
-                    label='真的会玩吗'
-                    name='playerSwitch'
-                    valuePropName='checked'
-                  >
-                    <Switch
-                      checkedChildren="会的会的"
-                      unCheckedChildren="会..会吗？"
-                      defaultChecked
-                    />
-                  </Form.Item>
+          {/* Switch */}
+          <Form.Item
+            label='真的会玩吗'
+            name='playerSwitch'
+            valuePropName='checked'
+          >
+            <Switch
+              checkedChildren="会的会的"
+              unCheckedChildren="会..会吗？"
+              defaultChecked
+            />
+          </Form.Item>
 
-                  {/* TimePicker */}
-                  <Form.Item
-                    label='就问你何时上号'
-                    name='playerOnlineTime'
-                  >
-                    <TimePicker.RangePicker/>
-                  </Form.Item>
+          {/* TimePicker */}
+          <Form.Item
+            label='就问你何时上号'
+            name='playerOnlineTime'
+          >
+            <TimePicker.RangePicker/>
+          </Form.Item>
 
-                  {/* ☆☆☆☆☆ TreeSelect */}
-                  <Form.Item
-                    label='选择传奇'
-                    name='selectedHero'
-                  >
-                    <TreeSelect
-                      placeholder="请选择你的铁驭"
-                      allowClear
-                      showSearch
-                      treeDefaultExpandAll
-                      dropdownStyle={{
-                        maxHeight: 200,
-                        overflow: 'auto'
-                      }}
-                    >
-                      <TreeNode value='zzy' title='章子怡' selectable={false}>
-                        <TreeNode value='Hill' title='希尔'/>  
-                        <TreeNode value='Roba' title='罗芭'/>                                                                                                                                                                                                   
-                      </TreeNode>
+          {/* ☆☆☆☆☆ TreeSelect */}
+          <Form.Item
+            label='选择传奇'
+            name='selectedHero'
+          >
+            <TreeSelect
+              placeholder="请选择你的铁驭"
+              allowClear
+              showSearch
+              treeDefaultExpandAll
+              dropdownStyle={{
+                maxHeight: 200,
+                overflow: 'auto'
+              }}
+            >
+              <TreeNode value='zzy' title='章子怡' selectable={false}>
+                <TreeNode value='Hill' title='希尔'/>  
+                <TreeNode value='Roba' title='罗芭'/>                                                                                                                                                                                                   
+              </TreeNode>
 
                       <TreeNode value='lsq' title='李思齐' selectable={false}>
                         <TreeNode value='PowerKids' title='动力小子'/>  
