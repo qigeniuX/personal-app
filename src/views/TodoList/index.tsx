@@ -52,17 +52,6 @@ const TodoList = () => {
 			key: 'theTime',
 			width: '15%',
 		},
-		{
-			title: '计划完成日期',
-			dataIndex: 'deadlineDate',
-			key: 'deadlineDate',
-			width: '15%',
-			render: () => (
-				<DatePicker
-					allowClear
-				/>
-			)
-		},
     {
       title: '来自',
       dataIndex: 'state',
@@ -226,9 +215,8 @@ const TodoList = () => {
 
 	const handleAddCardTaskButton = () => {
 		setCardValue(inputValue)
-		console.log(cardValue)
 
-		localStorage.setItem('daily_card_task',cardValue)
+		localStorage.setItem('daily_card_task',inputValue)
 	}
 
 	const handleCardClick = () => { 
