@@ -1,5 +1,5 @@
-import React from 'react';
-import { useState } from 'react';
+import React from 'react'
+import { useState } from 'react'
 
 function MutiChart() {
   const [level, setLevel] = useState(9)
@@ -37,7 +37,7 @@ function MutiChart() {
                         style={{
                           marginLeft: i === 0 ?
                             undefined:
-                            '12px'
+                            '12px',
                         }}
                       >
                         {ele} * {v} = {ele * v < 10 ? `0${ele * v}` : ele * v}
@@ -53,4 +53,4 @@ function MutiChart() {
   )
 }
 
-export default MutiChart;
+export default MutiChart

@@ -18,12 +18,12 @@ const columns: ColumnsType<ListTableDatum> = [
   {
     title:'地区',
     dataIndex:'userAddress',
-    key:'userAddress'
+    key:'userAddress',
   },
   {
     title:'年龄',
     dataIndex:'userAge',
-    key:'userAge'
+    key:'userAge',
   },
 ]
 

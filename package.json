@@ -21,7 +21,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "lint": "npx eslint ",
+    "lint": "npx eslint . --ext .js,.ts,.jsx,.tsx --fix",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
