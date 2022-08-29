@@ -1,21 +1,21 @@
 class Person {
-    age
-    name
+  age
+  name
 
-    constructor(age, name) {
-        this.age = age
-        this.name = name
-    }
+  constructor(age, name) {
+    this.age = age
+    this.name = name
+  }
 }
 
 class ProgrammePerson extends Person {
-    skills
+  skills
 
-    constructor(age, name, skills) {
-        super(age, name)
+  constructor(age, name, skills) {
+    super(age, name)
 
-        this.skills = skills
-    }
+    this.skills = skills
+  }
 }
 
 li = new ProgrammePerson(20, 'li', ['C+++++++++++++'])

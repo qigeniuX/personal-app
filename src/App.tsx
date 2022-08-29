@@ -26,7 +26,7 @@ function App() {
     { label: '演示列表', key: 'demoList', view: <DemoList /> },
     { label: '演示表单', key: 'demoForm', view:  <DemoForm /> },
     { label: '测试ts', key: 'tsTest', view: <TsTest /> },
-    { label: 'TODO列表', key: 'todoList', view: <TodoList /> }
+    { label: 'TODO列表', key: 'todoList', view: <TodoList /> },
   ]
 
   const handleMenuClick = (e : any) => {
@@ -53,21 +53,21 @@ function App() {
   }
   
   useEffect(() => {
-     getImgs()
+    getImgs()
   }, [])
 
   return (
     <Layout style={{ height: '100%' }}>
       <Header
         style={{
-          backgroundColor: 'pink'
+          backgroundColor: 'pink',
         }}
       >
         <img
           style={{
             width: '64px',
             height: '64px',
-            backgroundColor: 'green'
+            backgroundColor: 'green',
           }}
           src={imgSrc}
         />
@@ -75,7 +75,7 @@ function App() {
           style={{
             width: '64px',
             height: '64px',
-            backgroundColor: 'red'
+            backgroundColor: 'red',
           }}
           src={catImgSrc}
         />
@@ -88,14 +88,14 @@ function App() {
 
         <Content
           style={{
-            padding:'12px'
+            padding:'12px',
           }}
         >
           {currentView}
         </Content>
       </Layout>
     </Layout>
- )
+  )
 }
 
 export default App

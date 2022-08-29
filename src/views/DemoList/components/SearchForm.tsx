@@ -10,11 +10,11 @@ const SearchForm: React.FC<Props> = (props) => {
 
   return (
     <Form
-        layout='inline'
-        style={{
-          marginBottom:'16px'
-        }}
-        onFinish={onFinish}
+      layout='inline'
+      style={{
+        marginBottom:'16px',
+      }}
+      onFinish={onFinish}
     >
       <Form.Item
         name='userName'
