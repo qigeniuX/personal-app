@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-import MutiChart from './views/MutiChart';
-import YangHuiTringle from './views/YangHuiTringle';
+import React, { useEffect, useState } from 'react'
+import './App.css'
+import MutiChart from './views/MutiChart'
+import YangHuiTringle from './views/YangHuiTringle'
 import { Button, Layout, Menu, Space } from 'antd'
-import TestButton from './views/TestButton';
-import DemoList from './views/DemoList';
-import DemoForm from './views/DemoForm';
-import axios from 'axios';
-import TsTest from './views/TsTest';
-import TodoList from 'views/TodoList';
+import TestButton from './views/TestButton'
+import DemoList from './views/DemoList'
+import DemoForm from './views/DemoForm'
+import axios from 'axios'
+import TsTest from './views/TsTest'
+import TodoList from 'views/TodoList'
 
 const { Header, Sider, Content } = Layout
 
@@ -98,4 +98,4 @@ function App() {
  )
 }
 
-export default App;
+export default App

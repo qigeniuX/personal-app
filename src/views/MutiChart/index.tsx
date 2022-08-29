@@ -1,10 +1,11 @@
+import React from 'react';
 import { useState } from 'react';
 
 function MutiChart() {
   const [level, setLevel] = useState(9)
   const [arr, setArr] = useState(new Array(level).fill('').map((_, i) => i + 1))
 
-  const handleLevelInputChange = (v) => {
+  const handleLevelInputChange = (v: any) => {
     setLevel(parseInt(v.target.value || 0))//target,value用法
   }
 
