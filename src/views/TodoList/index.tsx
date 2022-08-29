@@ -14,22 +14,21 @@ import { cloneDeep } from 'lodash-es'
 // TODO: 提前完成需求的展示 未完成需求的展示
 
 // TODO: 添加类型
-
 const TodoList = () => {
-	const [taskData, setTaskData] = useState<any[]>([])
-	const [finishedTaskData, setFinishedTaskData] = useState<any[]>([])
+  const [taskData, setTaskData] = useState<any[]>([])
+  const [finishedTaskData, setFinishedTaskData] = useState<any[]>([])
   const [inputValue, setInputValue] = useState<string>('')
   const [modifyInputValue, setModifyInputValue] = useState<string>('')
-	const [cardValue, setCardValue] = useState<string>('点我添加日常任务')
+  const [cardValue, setCardValue] = useState<string>('点我添加日常任务')
 
-	const newTaskColumns = [
-		{
-			title: '未完成任务',
-			dataIndex: 'theTask',
-			key: 'theTask',
+  const newTaskColumns = [
+    {
+      title: '未完成任务',
+      dataIndex: 'theTask',
+      key: 'theTask',
       width: '30%',
       ellipsis: true,
-			render: (text:any, record: any, index: number) => (
+      render: (text:any, record: any, index: number) => (
         record.isEditing ?
           <Input 
             defaultValue={text} 
@@ -41,29 +40,29 @@ const TodoList = () => {
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
-           }
+          }
           }
           >{text}</div>
-      ) 
-		},
-		{
-			title: '添加时间',
-			dataIndex: 'theTime',
-			key: 'theTime',
-			width: '15%',
-		},
+      ), 
+    },
+    {
+      title: '添加时间',
+      dataIndex: 'theTime',
+      key: 'theTime',
+      width: '15%',
+    },
     {
       title: '来自',
       dataIndex: 'state',
       key: 'state',
-			width: '10%',
+      width: '10%',
     },
-		{
-			title: '操作',
-			key: 'actions',
-			width: '25%',
-			render:(text:any, record:any, index: number) => (
-				<>
+    {
+      title: '操作',
+      key: 'actions',
+      width: '25%',
+      render:(text:any, record:any, index: number) => (
+        <>
           {
             record.isEditing ? (
               <>
@@ -74,54 +73,53 @@ const TodoList = () => {
               <>
                 <Button onClick={() => handleModifyButtonClick(index)}>修改</Button>
                 <Button danger onClick={() => handleClickDeleteButton(index)}>删除</Button>
-								<Button type="primary" onClick={() => handleClickFinishedButton(index)}>完成</Button> 
+                <Button type="primary" onClick={() => handleClickFinishedButton(index)}>完成</Button> 
               </>
-
             )
           }
-				</>
-			)
-		},
-	]
+        </>
+      ),
+    },
+  ]
 
   // TODO: 添加类型
-	const finishedTaskColumns = [
-		{
-			title: '已完成任务',
-			dataIndex: 'theTask',
-			key: 'theTask',
+  const finishedTaskColumns = [
+    {
+      title: '已完成任务',
+      dataIndex: 'theTask',
+      key: 'theTask',
       ellipsis: true,
       width: '30%',
-      render: (text :string) => <span style={{ textDecoration: 'line-through' }}>{text}</span>
-		},
-		{
-			title: '完成时间',
-			dataIndex: 'theTime',
-			width: '15%',
-			key: 'theTime'
-		},
-		{
-			title: '操作',
-			key: 'actions',
-			width: '25%',
-			render:(text:any, record:any, index:number) => (
-				<>
-					<Button onClick={() => handleClickRevokeButton(index)}>撤销</Button>
-				</>
-			)
-		}
-	]
+      render: (text :string) => <span style={{ textDecoration: 'line-through' }}>{text}</span>,
+    },
+    {
+      title: '完成时间',
+      dataIndex: 'theTime',
+      width: '15%',
+      key: 'theTime',
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      width: '25%',
+      render:(text:any, record:any, index:number) => (
+        <>
+          <Button onClick={() => handleClickRevokeButton(index)}>撤销</Button>
+        </>
+      ),
+    },
+  ]
 
-	const handleClickFinishedButton = (index : number) => {
-		const newData = [...taskData]
-		const addFinData = newData.splice(index,1)
-		const finData = [...finishedTaskData]
+  const handleClickFinishedButton = (index : number) => {
+    const newData = [...taskData]
+    const addFinData = newData.splice(index,1)
+    const finData = [...finishedTaskData]
   
-		addFinData[0].theTime = moment().format('YYYY-MM-DD HH:mm:ss')
-		finData.push(...addFinData)
+    addFinData[0].theTime = moment().format('YYYY-MM-DD HH:mm:ss')
+    finData.push(...addFinData)
 
-		setFinishedTaskData(finData)
-		setTaskData(newData)
+    setFinishedTaskData(finData)
+    setTaskData(newData)
     const dataForSave = cloneDeep(newData)
     dataForSave.forEach((ele) => {
       delete ele.isEditing
@@ -129,19 +127,19 @@ const TodoList = () => {
     
     localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
     localStorage.setItem('todo_list__finished_tasks', JSON.stringify(finData))
-	}
+  }
 
-	const handleClickRevokeButton = (index : number) => {
-		const newData = [...taskData]
-		const finData = [...finishedTaskData]
-		const revokeData = finData.splice(index,1)
-		revokeData[0].theTime = moment().format('YYYY-MM-DD HH:mm:ss')
-		revokeData[0].state = "撤回"
+  const handleClickRevokeButton = (index : number) => {
+    const newData = [...taskData]
+    const finData = [...finishedTaskData]
+    const revokeData = finData.splice(index,1)
+    revokeData[0].theTime = moment().format('YYYY-MM-DD HH:mm:ss')
+    revokeData[0].state = "撤回"
 
-		newData.push(...revokeData)
+    newData.push(...revokeData)
 
-		setFinishedTaskData(finData)
-		setTaskData(newData)
+    setFinishedTaskData(finData)
+    setTaskData(newData)
 
     const dataForSave = cloneDeep(newData)
     dataForSave.forEach((ele) => {
@@ -150,13 +148,13 @@ const TodoList = () => {
     
     localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
     localStorage.setItem('todo_list__finished_tasks', JSON.stringify(finData))
-	}
+  }
 
-	const handleClickDeleteButton = (index : number) => {
-		const deleteData = [...taskData]
-		deleteData.splice(index,1)
+  const handleClickDeleteButton = (index : number) => {
+    const deleteData = [...taskData]
+    deleteData.splice(index,1)
 		
-		setTaskData(deleteData)
+    setTaskData(deleteData)
 
     const dataForSave = cloneDeep(deleteData)
     dataForSave.forEach((ele) => {
@@ -164,7 +162,7 @@ const TodoList = () => {
     })
     
     localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
-	}
+  }
 
   const handleModifyButtonClick = (index: number) => {
     setModifyInputValue(taskData[index].theTask)
@@ -186,13 +184,13 @@ const TodoList = () => {
     const newData = [...taskData]
     newData[index].isEditing = false
     newData[index].theTask = modifyInputValue
-		newData[index].state = '修改'
+    newData[index].state = '修改'
 
     setTaskData(newData)
 
     const dataForSave = cloneDeep(newData)
     dataForSave.forEach((ele) => {
-    delete ele.isEditing
+      delete ele.isEditing
     })
     
     localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
@@ -213,53 +211,53 @@ const TodoList = () => {
 
   }
 
-	const handleAddCardTaskButton = () => {
-		setCardValue(inputValue)
+  const handleAddCardTaskButton = () => {
+    setCardValue(inputValue)
 
-		localStorage.setItem('daily_card_task',inputValue)
-	}
+    localStorage.setItem('daily_card_task',inputValue)
+  }
 
-	const handleCardClick = () => { 
-		if (cardValue === '') {return}
+  const handleCardClick = () => { 
+    if (cardValue === '') {return}
 
-		const newTask = [...taskData]
+    const newTask = [...taskData]
 		
-		const theKey = uuidv4()
+    const theKey = uuidv4()
 		
-		newTask.push({
-			key: theKey,
-			theTask: cardValue,
-			state: '日常任务',
-			theTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-		})
+    newTask.push({
+      key: theKey,
+      theTask: cardValue,
+      state: '日常任务',
+      theTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+    })
 
-		const dataForSave = cloneDeep(newTask)
+    const dataForSave = cloneDeep(newTask)
     dataForSave.forEach((ele) => {
       delete ele.isEditing
     })
 
-		setTaskData(newTask)
+    setTaskData(newTask)
 
-		localStorage.setItem('daily_card_task',cardValue)
+    localStorage.setItem('daily_card_task',cardValue)
     localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
-	}
+  }
   
   // TODO: 添加类型
-	const addDatum = (value: any) => {
-		if (value === '') { return }
+  const addDatum = (value: any) => {
+    if (value === '') { return }
 
-		const addTaskData: any[] = [...taskData]
-		const theKey = uuidv4()
+    const addTaskData: any[] = [...taskData]
+    const theKey = uuidv4()
 		
-		addTaskData.push({
+    addTaskData.push({
       key: theKey,
       theTask: value,
-			state: '新增',
+      state: '新增',
       theTime: moment().format('YYYY-MM-DD HH:mm:ss'),
 
     })
 
-		setTaskData(addTaskData)
+    setTaskData(addTaskData)
     setInputValue('')
 
     const dataForSave = cloneDeep(addTaskData)
@@ -268,7 +266,7 @@ const TodoList = () => {
     })
 
     localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
-	}
+  }
 
   const handleInputSearchChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     if ((e.nativeEvent as any).data === undefined) {
@@ -287,59 +285,59 @@ const TodoList = () => {
     if ( localStorage.getItem('todo_list__finished_tasks') === null )
       localStorage.setItem('todo_list__finished_tasks', '[]')
 
-		if ( localStorage.getItem('daily_card_task') === null )
+    if ( localStorage.getItem('daily_card_task') === null )
       localStorage.setItem('daily_card_task', '')
 
     setTaskData(JSON.parse(localStorage.getItem('todo_list__unfinished_tasks')!) as string[])
     setFinishedTaskData(JSON.parse(localStorage.getItem('todo_list__finished_tasks')!) as string[])
-		setCardValue(localStorage.getItem('daily_card_task')!)
+    setCardValue(localStorage.getItem('daily_card_task')!)
   }, [])
 
-	return (
-		<Layout>
-			<Header style={{
+  return (
+    <Layout>
+      <Header style={{
         display: 'flex',
         backgroundColor: 'white',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
       }}>
-				<Input.Search
-					placeholder="请输入今日任务" 
-					enterButton='点我加数据'
+        <Input.Search
+          placeholder="请输入今日任务" 
+          enterButton='点我加数据'
           value={inputValue}
-					onSearch={addDatum}
+          onSearch={addDatum}
           onChange={handleInputSearchChange}
           allowClear
-				/>
-				<Button
-					onClick={handleAddCardTaskButton}
-				>点我添加为日常任务</Button>
+        />
+        <Button
+          onClick={handleAddCardTaskButton}
+        >点我添加为日常任务</Button>
 				
-			</Header>
+      </Header>
 
-			<Layout>
-				<Content>
-						<Table columns={newTaskColumns} dataSource={taskData} />
-						<Card 
-							style={{width: '250px', margin: '15px'}}
-							hoverable={true}
-							onClick={handleCardClick}
+      <Layout>
+        <Content>
+          <Table columns={newTaskColumns} dataSource={taskData} />
+          <Card 
+            style={{width: '250px', margin: '15px'}}
+            hoverable={true}
+            onClick={handleCardClick}
 							
-						>{cardValue}</Card>
-						<Table
-              columns={finishedTaskColumns} 
+          >{cardValue}</Card>
+          <Table
+            columns={finishedTaskColumns} 
 						  dataSource={finishedTaskData} 
-						// onRow={record => {
-						// 	return {
-						// 		onMouseEnter: onMouseEnterEvent => {}
-						// 	}}
-						// }
-						/>
-				</Content>
+            // onRow={record => {
+            // 	return {
+            // 		onMouseEnter: onMouseEnterEvent => {}
+            // 	}}
+            // }
+          />
+        </Content>
 			
-			</Layout>
-		</Layout>
-	)
+      </Layout>
+    </Layout>
+  )
 }
 
 export default TodoList

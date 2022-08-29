@@ -1,7 +1,8 @@
+import React from 'react';
 import { useState } from 'react';
 
-const genTringleArr = (num) => {
-  let arr = []
+const genTringleArr = (num: number) => {
+  let arr: any[] = []
 
   for (let a = 0 ; a < num ; a++) {
     arr.push([])
@@ -25,7 +26,7 @@ const YangHuiTringle = () => {
     const [arr, setArr] = useState(genTringleArr(level))
   
 
-    const handleLevelInputChange = (v) => {
+    const handleLevelInputChange = (v: any) => {
       setLevel(parseInt(v.target.value || 0))
     }
   
@@ -55,7 +56,7 @@ const YangHuiTringle = () => {
                     justifyContent: 'center'
                   }}
                 >
-                  {ele.map((ele2, index2) => {
+                  {ele.map((ele2: any, index2: number) => {
                     return (
                       <span key={index2} style={{marginLeft : '12px'}}>{ele2}</span>
                     )
