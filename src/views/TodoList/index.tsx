@@ -1,9 +1,9 @@
-import { Layout, Table, Button, Input, Card, DatePicker } from "antd"
+import { Layout, Table, Button, Input, Card, DatePicker, Drawer  } from "antd"
 import { Content,  Header } from "antd/lib/layout/layout"
 import moment from "moment"
 import React, { useEffect, useState } from "react"
-import { v4 as uuidv4 } from 'uuid'
-import { cloneDeep } from 'lodash-es'
+import { v4 as uuidv4 } from 'uuid';
+import { cloneDeep } from 'lodash-es';
 
 // TODO: 添加一个状态 （仅仅是新任务list）表示是新增的还是撤回的 done
 // TODO: 添加一个“上次修改时间” 修改后展示修改成功的时间 如果是添加或者撤回则显示添加或者撤回时间 
@@ -20,6 +20,7 @@ const TodoList = () => {
   const [inputValue, setInputValue] = useState<string>('')
   const [modifyInputValue, setModifyInputValue] = useState<string>('')
   const [cardValue, setCardValue] = useState<string>('点我添加日常任务')
+  const [drawerVisible, setDrawerVisible] = useState<boolean>(false)
 
   const newTaskColumns = [
     {
@@ -29,12 +30,6 @@ const TodoList = () => {
       width: '30%',
       ellipsis: true,
       render: (text:any, record: any, index: number) => (
-        record.isEditing ?
-          <Input 
-            defaultValue={text} 
-            value={modifyInputValue} 
-            onChange={(e) => setModifyInputValue(e.target.value)}
-          /> :
           <div style={{
             maxWidth: 270,
             overflow: 'hidden',
@@ -61,23 +56,36 @@ const TodoList = () => {
       title: '操作',
       key: 'actions',
       width: '25%',
+      // 在不做条件的情况下，直接渲染Drawer 和 Button，点开抽屉 遮罩区不透明  我直接懂又不懂
       render:(text:any, record:any, index: number) => (
-        <>
-          {
-            record.isEditing ? (
               <>
-                <Button type="primary" onClick={() => handleCompleteButtonClick(index)}>完成修改</Button> 
-                <Button onClick={() => {handleCancelButtonClick(index)}}>取消</Button>
+                { 
+                  record.isEditing ? (
+                    <>
+                      <Drawer
+                        title="Task修改"
+                        width={500}
+                        visible={drawerVisible}
+                        onClose={() => handleDrawerClose(index)}
+                      >
+                        <Input
+                          value={modifyInputValue}
+                          onChange={(e) => {setModifyInputValue(e.target.value)}}
+                        />
+                      </Drawer>
+                      <Button onClick={() => handleModifyButtonClick(index, record)}>修改</Button>
+                      <Button danger onClick={() => handleClickDeleteButton(index)}>删除</Button>
+                      <Button type="primary" onClick={() => handleClickFinishedButton(index)}>完成</Button> 
+                    </>
+                  ) : (
+                    <>
+                      <Button onClick={() => handleModifyButtonClick(index, record)}>修改</Button>
+                      <Button danger onClick={() => handleClickDeleteButton(index)}>删除</Button>
+                      <Button type="primary" onClick={() => handleClickFinishedButton(index)}>完成</Button> 
+                    </>
+                  )
+               }
               </>
-            ) : (
-              <>
-                <Button onClick={() => handleModifyButtonClick(index)}>修改</Button>
-                <Button danger onClick={() => handleClickDeleteButton(index)}>删除</Button>
-                <Button type="primary" onClick={() => handleClickFinishedButton(index)}>完成</Button> 
-              </>
-            )
-          }
-        </>
       ),
     },
   ]
@@ -164,8 +172,10 @@ const TodoList = () => {
     localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
   }
 
-  const handleModifyButtonClick = (index: number) => {
+  const handleModifyButtonClick = (index: number, record: any) => {
+    console.log(record)
     setModifyInputValue(taskData[index].theTask)
+    setDrawerVisible(true)
 
     const newData = [...taskData]
     newData[index].isEditing = true
@@ -181,7 +191,7 @@ const TodoList = () => {
   }
 
   const handleCompleteButtonClick = (index: number) => {
-    const newData = [...taskData]
+    const newData = cloneDeep(taskData)
     newData[index].isEditing = false
     newData[index].theTask = modifyInputValue
     newData[index].state = '修改'
@@ -241,6 +251,16 @@ const TodoList = () => {
     localStorage.setItem('daily_card_task',cardValue)
     localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
   }
+
+  const handleDrawerClose = (index : number) => {
+    const newTask = cloneDeep(taskData)
+    newTask[index].isEditing = false
+    newTask[index].theTask = modifyInputValue
+
+    setTaskData(newTask)        
+    setDrawerVisible(false)
+  }
+
   
   // TODO: 添加类型
   const addDatum = (value: any) => {
@@ -294,49 +314,51 @@ const TodoList = () => {
   }, [])
 
   return (
-    <Layout>
-      <Header style={{
-        display: 'flex',
-        backgroundColor: 'white',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <Input.Search
-          placeholder="请输入今日任务" 
-          enterButton='点我加数据'
-          value={inputValue}
-          onSearch={addDatum}
-          onChange={handleInputSearchChange}
-          allowClear
-        />
-        <Button
-          onClick={handleAddCardTaskButton}
-        >点我添加为日常任务</Button>
-				
-      </Header>
-
+    <>
       <Layout>
-        <Content>
-          <Table columns={newTaskColumns} dataSource={taskData} />
-          <Card 
-            style={{width: '250px', margin: '15px'}}
-            hoverable={true}
-            onClick={handleCardClick}
-							
-          >{cardValue}</Card>
-          <Table
-            columns={finishedTaskColumns} 
-						  dataSource={finishedTaskData} 
-            // onRow={record => {
-            // 	return {
-            // 		onMouseEnter: onMouseEnterEvent => {}
-            // 	}}
-            // }
+        <Header style={{
+          display: 'flex',
+          backgroundColor: 'white',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Input.Search
+            placeholder="请输入今日任务" 
+            enterButton='点我加数据'
+            value={inputValue}
+            onSearch={addDatum}
+            onChange={handleInputSearchChange}
+            allowClear
           />
-        </Content>
-			
+          <Button
+            onClick={handleAddCardTaskButton}
+          >点我添加为日常任务</Button>
+          
+        </Header>
+
+        <Layout>
+          <Content>
+            <Table columns={newTaskColumns} dataSource={taskData} />
+            <Card 
+              style={{width: '250px', margin: '15px'}}
+              hoverable={true}
+              onClick={handleCardClick}
+                
+            >{cardValue}</Card>
+            <Table
+              columns={finishedTaskColumns} 
+                dataSource={finishedTaskData} 
+              // onRow={record => {
+              // 	return {
+              // 		onMouseEnter: onMouseEnterEvent => {}
+              // 	}}
+              // }
+            />
+          </Content>
+        
+        </Layout>
       </Layout>
-    </Layout>
+    </>
   )
 }
 
