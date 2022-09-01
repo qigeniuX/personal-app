@@ -1,22 +1,30 @@
 import { Button, Drawer, Input, Table } from "antd"
+import { ColumnsType } from "antd/lib/table"
+import { cloneDeep } from "lodash-es"
 import React, { useEffect, useState } from "react"
 
 interface Props {
   // TODO: 正确化这里的类型
-  taskData: unknown[]
+  taskData: TaskDataValue[]
+  onDelete: (index: number) => void
+  onComplete: (index: number) => void
 }
 
-// interface taskDataValue {
-//   theTask?: string,
-//   theTime?: string,
-//   state?: string,
-//   actions?: any, 
-// }
+export interface TaskDataValue {
+  key?: string,
+  theTask?: string,
+  theTime?: string,
+  state?: string,
+  actions?: any, 
+}
 
 const UnfinishedTable: React.FC<Props> = (props) => {
-  const { taskData } = props
   
-  const newTaskColumns = [
+  const { taskData, onDelete, onComplete } = props
+
+  
+
+  const newTaskColumns : ColumnsType<TaskDataValue> = [
     {
       title: '未完成任务',
       dataIndex: 'theTask',
@@ -77,9 +85,20 @@ const UnfinishedTable: React.FC<Props> = (props) => {
     },
   ]
   
-  const handleClickDeleteButton = (index : number) => {}
+  const handleClickDeleteButton = (index : number) => {
+    // const deleteData = cloneDeep(dataSource)
+    // taskData.splice(index,1)
+    
+    // setDataSource(deleteData)
+    
+    // localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(deleteData))
+    onDelete(index)
+  }
 
-  const handleClickFinishedButton = (index : number) => {}
+
+  const handleClickFinishedButton = (index : number) => {
+    onComplete(index)
+  }
 
   const handleModifyButtonClick = (index: number, record: any) => {
     // setModifyInputValue(taskData[index].theTask)

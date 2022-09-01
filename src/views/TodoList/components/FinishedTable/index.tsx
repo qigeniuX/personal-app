@@ -1,11 +1,27 @@
 import { Button, Table } from "antd"
+import { ColumnsType } from "antd/lib/table"
 import React, { useEffect, useState } from "react"
 
-const FinishedTable = () => {
+interface Props {
+  finishedTaskData: FinishedTaskDataValue[],
+  onRevoke: (index: number) => void
+}
+
+export interface FinishedTaskDataValue {
+  key?: string,
+  theTask?: string,
+  theTime?: string,
+  state?: string,
+  actions?: any, 
+}
+
+const FinishedTable : React.FC<Props> = (props) => {
+
+  const { finishedTaskData, onRevoke } = props
   
-  const [finishedTaskData, setFinishedTaskData] = useState<any[]>([])
+  // const [finishedTaskData, setFinishedTaskData] = useState<any[]>([])
   
-  const finishedTaskColumns = [
+  const finishedTaskColumns : ColumnsType<FinishedTaskDataValue> = [
     {
       title: '已完成任务',
       dataIndex: 'theTask',
@@ -32,14 +48,16 @@ const FinishedTable = () => {
     },
   ]
 
-  const handleClickRevokeButton = (index : number) => {}
+  const handleClickRevokeButton = (index : number) => {
+    onRevoke(index)
+  }
 
-  useEffect(() => {
-    if ( localStorage.getItem('todo_list__finished_tasks') === null )
-      localStorage.setItem('todo_list__finished_tasks', '[]')
+  // useEffect(() => {
+  //   if ( localStorage.getItem('todo_list__finished_tasks') === null )
+  //     localStorage.setItem('todo_list__finished_tasks', '[]')
       
-    setFinishedTaskData(JSON.parse(localStorage.getItem('todo_list__finished_tasks')!) as string[])
-  }, [])
+  //   setFinishedTaskData(JSON.parse(localStorage.getItem('todo_list__finished_tasks')!) as string[])
+  // }, [])
   
   return (
     <Table
