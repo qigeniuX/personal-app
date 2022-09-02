@@ -8,6 +8,7 @@ import './index.css'
 import CreateForm, { FormValue } from "./components/CreateForm"
 import UnfinishedTable, { TaskDataValue } from "./components/UnfinishedTable"
 import FinishedTable, { FinishedTaskDataValue } from "./components/FinishedTable"
+import ModifyDrawer, { DrawerFormValue } from "./components/ModifyDrawer"
 
 // TODO: 添加一个“上次修改时间” 修改后展示修改成功的时间 如果是添加或者撤回则显示添加或者撤回时间 
 // TODO: 抽屉内添加一个保存按钮，点击确认所有改动。其他方式关闭抽屉则视为取消。
@@ -26,6 +27,9 @@ const TodoList = () => {
   // TODO: 类型
   const [unfinishedTaskData, setUnfinishedTaskData] = useState<TaskDataValue[]>([])
   const [finishedTaskData, setFinishedTaskData] = useState<FinishedTaskDataValue[]>([])
+  const [modifyTaskIndex, setModifyTaskIndex] = useState<number>(-1)
+  const [isVisible, setIsVisible] = useState<boolean>(false)
+
 
   const SaveUnfinishedTaskData = (data : TaskDataValue[]) => {
     localStorage.setItem('todo_list__unfinished_tasks',JSON.stringify(data))
@@ -37,7 +41,7 @@ const TodoList = () => {
 
   const handleCreateFormCreate = (value: FormValue) => {
     if (value === '') { return }
-
+ 
     const addTaskData: TaskDataValue[] = cloneDeep(unfinishedTaskData)
     const theKey = uuidv4()
 		
@@ -46,7 +50,6 @@ const TodoList = () => {
       theTask: value.taskName,
       state: '新增',
       theTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-
     })
 
     setUnfinishedTaskData(addTaskData)
@@ -94,6 +97,21 @@ const TodoList = () => {
     SaveUnfinishedTaskData(newData)
   }
 
+  const handleClickModifyButton = (index : number, record : any) => {
+    setModifyTaskIndex(index)
+    setIsVisible(true)
+    
+  }
+
+  const handleClickSaveButton = (value: DrawerFormValue) => {
+    const newData = cloneDeep(unfinishedTaskData)
+    newData[modifyTaskIndex].theTask = value.inputValue
+    
+    setUnfinishedTaskData(newData)
+
+    SaveUnfinishedTaskData(newData)
+  }
+
 
   const taskData : TaskDataValue[] = unfinishedTaskData
   const taskData2 : FinishedTaskDataValue[] = finishedTaskData
@@ -113,9 +131,16 @@ const TodoList = () => {
     <>
       <CreateForm onCreate={handleCreateFormCreate} />
 
-      <UnfinishedTable taskData={taskData} onDelete={handleClickDeleteButton} onComplete={handleClickFinishedButton}/>
+      <UnfinishedTable 
+        taskData={taskData} 
+        onDelete={handleClickDeleteButton} 
+        onComplete={handleClickFinishedButton}
+        onModify={handleClickModifyButton}
+      />
 
       <FinishedTable finishedTaskData={taskData2} onRevoke={handleClickRevokeButton}/>
+
+      <ModifyDrawer onSave={handleClickSaveButton} isVisible={isVisible} />
 
 
       {/* <Layout>

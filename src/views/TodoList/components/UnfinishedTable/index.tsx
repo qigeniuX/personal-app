@@ -8,6 +8,7 @@ interface Props {
   taskData: TaskDataValue[]
   onDelete: (index: number) => void
   onComplete: (index: number) => void
+  onModify:(index: number, record: any) => void
 }
 
 export interface TaskDataValue {
@@ -20,7 +21,7 @@ export interface TaskDataValue {
 
 const UnfinishedTable: React.FC<Props> = (props) => {
   
-  const { taskData, onDelete, onComplete } = props
+  const { taskData, onDelete, onComplete, onModify } = props
 
   
 
@@ -101,17 +102,7 @@ const UnfinishedTable: React.FC<Props> = (props) => {
   }
 
   const handleModifyButtonClick = (index: number, record: any) => {
-    // setModifyInputValue(taskData[index].theTask)
-    // setDrawerVisible(true)
-    // setCurrentEditingDatumIndex(index)
-
-    // const newData = [...taskData]
-    
-    // setTaskData(newData)
-
-    // const dataForSave = cloneDeep(newData)
-    
-    // localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(dataForSave))
+    onModify(index, record)
   }
   return (
     <>
