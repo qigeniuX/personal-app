@@ -16,6 +16,7 @@ const CreateForm: React.FC<Props> = (props) => {
 
   const handleSearch = () => {
     onCreate(form.getFieldsValue())
+    form.setFieldValue('taskName', '')
   }
 
   return (

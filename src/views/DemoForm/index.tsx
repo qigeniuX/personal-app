@@ -38,7 +38,7 @@ type FormValue = {
   playerPhoto?: Record<string, any>[]
 }
 
-const DemoForm:React.FC = () => {
+const DemoForm: React.FC = () => {
   const [form] = Form.useForm<FormValue>()
 
   const handleFinish = (values: FormValue) => {

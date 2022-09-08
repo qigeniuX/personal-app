@@ -1,5 +1,3 @@
-import { Layout, Table, Button, Input, Card, DatePicker, Drawer  } from "antd"
-import { Content,  Header } from "antd/lib/layout/layout"
 import moment from "moment"
 import React, { useEffect, useState } from "react"
 import { v4 as uuidv4 } from 'uuid'
@@ -9,6 +7,7 @@ import CreateForm, { FormValue } from "./components/CreateForm"
 import UnfinishedTable, { TaskDataValue } from "./components/UnfinishedTable"
 import FinishedTable, { FinishedTaskDataValue } from "./components/FinishedTable"
 import ModifyDrawer, { DrawerFormValue } from "./components/ModifyDrawer"
+import { FieldData } from "rc-field-form/es/interface"
 
 // TODO: 添加一个“上次修改时间” 修改后展示修改成功的时间 如果是添加或者撤回则显示添加或者撤回时间 
 // TODO: 抽屉内添加一个保存按钮，点击确认所有改动。其他方式关闭抽屉则视为取消。
@@ -28,14 +27,14 @@ const TodoList = () => {
   const [unfinishedTaskData, setUnfinishedTaskData] = useState<TaskDataValue[]>([])
   const [finishedTaskData, setFinishedTaskData] = useState<FinishedTaskDataValue[]>([])
   const [modifyTaskIndex, setModifyTaskIndex] = useState<number>(-1)
-  const [isVisible, setIsVisible] = useState<boolean>(false)
-
-
-  const SaveUnfinishedTaskData = (data : TaskDataValue[]) => {
+  const [isModifyDrawerVisible, setIsModifyDrawerVisible] = useState<boolean>(false)
+  const [taskValue, setTaskValue] = useState<TaskDataValue>()
+  
+  const saveUnfinishedTaskData = (data : TaskDataValue[]) => {
     localStorage.setItem('todo_list__unfinished_tasks',JSON.stringify(data))
   }
 
-  const SaveFinishedTaskData = (data : FinishedTaskDataValue[]) => {
+  const saveFinishedTaskData = (data : FinishedTaskDataValue[]) => {
     localStorage.setItem('todo_list__finished_tasks',JSON.stringify(data))
   }
 
@@ -53,22 +52,20 @@ const TodoList = () => {
     })
 
     setUnfinishedTaskData(addTaskData)
-
-    SaveUnfinishedTaskData(addTaskData)
+    saveUnfinishedTaskData(addTaskData)
   }
 
-  const handleClickDeleteButton = (index: number) => {
+  const handleUnfinishedTableDelete = (index: number) => {
     const deleteData = cloneDeep(unfinishedTaskData)
-    deleteData.splice(index,1)
+    deleteData.splice(index, 1)
     
     setUnfinishedTaskData(deleteData)
-    
-    SaveUnfinishedTaskData(deleteData)
+    saveUnfinishedTaskData(deleteData)
   }
 
-  const handleClickFinishedButton = (index : number) => {
+  const handleUnfinishedTableComplete = (index : number) => {
     const newData = cloneDeep(unfinishedTaskData)
-    const addFinData = newData.splice(index,1)
+    const addFinData = newData.splice(index, 1)
     const finData = cloneDeep(finishedTaskData)
   
     addFinData[0].theTime = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -77,11 +74,11 @@ const TodoList = () => {
     setFinishedTaskData(finData)
     setUnfinishedTaskData(newData)
 
-    SaveFinishedTaskData(finData)
-    SaveUnfinishedTaskData(newData)
+    saveFinishedTaskData(finData)
+    saveUnfinishedTaskData(newData)
   }
 
-  const handleClickRevokeButton = (index : number) => {
+  const handleFinishedTableRevoke = (index : number) => {
     const newData = cloneDeep(unfinishedTaskData)
     const finData = cloneDeep(finishedTaskData)
     const revokeData = finData.splice(index,1)
@@ -93,28 +90,41 @@ const TodoList = () => {
     setFinishedTaskData(finData)
     setUnfinishedTaskData(newData)
 
-    SaveFinishedTaskData(finData)
-    SaveUnfinishedTaskData(newData)
+    saveFinishedTaskData(finData)
+    saveUnfinishedTaskData(newData)
   }
 
-  const handleClickModifyButton = (index : number, record : any) => {
+  const handleUnfinishedTableModify = (index : number, record : any) => {
     setModifyTaskIndex(index)
-    setIsVisible(true)
-    
+    // FIXME: 不可以直接set容器类型的值
+    setTaskValue(unfinishedTaskData[index])
+    setIsModifyDrawerVisible(true)
   }
 
-  const handleClickSaveButton = (value: DrawerFormValue) => {
+  const handleModifyDrawerSave = (value: DrawerFormValue) => {
     const newData = cloneDeep(unfinishedTaskData)
     newData[modifyTaskIndex].theTask = value.inputValue
+
+    setIsModifyDrawerVisible(false)
     
     setUnfinishedTaskData(newData)
 
-    SaveUnfinishedTaskData(newData)
+    saveUnfinishedTaskData(newData)
   }
 
+  const handleDrawerClose = () => {
+    setIsModifyDrawerVisible(false)
+  }
 
-  const taskData : TaskDataValue[] = unfinishedTaskData
-  const taskData2 : FinishedTaskDataValue[] = finishedTaskData
+  const handleDrawerInputChange = (changedField: FieldData) => {
+    const fieldName = (changedField.name as string[])[0]
+
+    if (fieldName === 'taskValue') {
+      const taskData = cloneDeep(unfinishedTaskData)
+      taskData[modifyTaskIndex].theTask = (changedField as any).value
+      setUnfinishedTaskData(taskData)
+    }
+  }
 
   useEffect(() => {
     if ( localStorage.getItem('todo_list__unfinished_tasks') === null )
@@ -132,15 +142,21 @@ const TodoList = () => {
       <CreateForm onCreate={handleCreateFormCreate} />
 
       <UnfinishedTable 
-        taskData={taskData} 
-        onDelete={handleClickDeleteButton} 
-        onComplete={handleClickFinishedButton}
-        onModify={handleClickModifyButton}
+        taskData={unfinishedTaskData}
+        onDelete={handleUnfinishedTableDelete} 
+        onComplete={handleUnfinishedTableComplete}
+        onModify={handleUnfinishedTableModify}
       />
 
-      <FinishedTable finishedTaskData={taskData2} onRevoke={handleClickRevokeButton}/>
+      <FinishedTable finishedTaskData={finishedTaskData} onRevoke={handleFinishedTableRevoke}/>
 
-      <ModifyDrawer onSave={handleClickSaveButton} isVisible={isVisible} />
+      <ModifyDrawer 
+        isVisible={isModifyDrawerVisible} 
+        taskValue={taskValue}
+        onChange={handleDrawerInputChange}
+        onSave={handleModifyDrawerSave}
+        closeDrawer={handleDrawerClose} 
+      />
 
 
       {/* <Layout>

@@ -1,15 +1,6 @@
 import { Button, Drawer, Input, Table } from "antd"
 import { ColumnsType } from "antd/lib/table"
-import { cloneDeep } from "lodash-es"
-import React, { useEffect, useState } from "react"
-
-interface Props {
-  // TODO: 正确化这里的类型
-  taskData: TaskDataValue[]
-  onDelete: (index: number) => void
-  onComplete: (index: number) => void
-  onModify:(index: number, record: any) => void
-}
+import React from "react"
 
 export interface TaskDataValue {
   key?: string,
@@ -19,11 +10,15 @@ export interface TaskDataValue {
   actions?: any, 
 }
 
-const UnfinishedTable: React.FC<Props> = (props) => {
-  
-  const { taskData, onDelete, onComplete, onModify } = props
+interface Props {
+  taskData: TaskDataValue[]
+  onDelete: (index: number) => void
+  onComplete: (index: number) => void
+  onModify:(index: number, record: TaskDataValue) => void
+}
 
-  
+const UnfinishedTable: React.FC<Props> = (props) => {
+  const { taskData, onDelete, onComplete, onModify } = props
 
   const newTaskColumns : ColumnsType<TaskDataValue> = [
     {
@@ -32,15 +27,15 @@ const UnfinishedTable: React.FC<Props> = (props) => {
       key: 'theTask',
       width: '30%',
       ellipsis: true,
-      render: (text:any, record: any, index: number) => (
+      render: (text: string) => (
         <div style={{
           maxWidth: 270,
           overflow: 'hidden',
           whiteSpace: 'nowrap',
           textOverflow: 'ellipsis',
-        }
-        }
-        >{text}</div>
+        }}>
+          {text}
+        </div>
       ), 
     },
     {
@@ -60,22 +55,10 @@ const UnfinishedTable: React.FC<Props> = (props) => {
       key: 'actions',
       width: '25%',
       // 在不做条件的情况下，直接渲染Drawer 和 Button，点开抽屉 遮罩区不透明  我直接懂又不懂
-      render:(text:any, record: any, index: number) => (
+      render:(_text, record, index) => (
         <>
           { 
             <>
-              {/* <Drawer
-                title="Task修改"
-                width={500}
-                visible={drawerVisible}
-                onClose={() => handleDrawerClose(index)}
-                mask={false}
-              >
-                <Input
-                  value={modifyInputValue}
-                  onChange={(e) => {setModifyInputValue(e.target.value)}}
-                />
-              </Drawer> */}
               <Button onClick={() => handleModifyButtonClick(index, record)}>修改</Button>
               <Button danger onClick={() => handleClickDeleteButton(index)}>删除</Button>
               <Button type="primary" onClick={() => handleClickFinishedButton(index)}>完成</Button> 
@@ -87,43 +70,22 @@ const UnfinishedTable: React.FC<Props> = (props) => {
   ]
   
   const handleClickDeleteButton = (index : number) => {
-    // const deleteData = cloneDeep(dataSource)
-    // taskData.splice(index,1)
-    
-    // setDataSource(deleteData)
-    
-    // localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(deleteData))
     onDelete(index)
   }
-
 
   const handleClickFinishedButton = (index : number) => {
     onComplete(index)
   }
 
-  const handleModifyButtonClick = (index: number, record: any) => {
+  const handleModifyButtonClick = (index: number, record: TaskDataValue) => {
     onModify(index, record)
   }
-  return (
-    <>
-      <Table
-        columns={newTaskColumns}
-        dataSource={taskData}
-      />
 
-      <Drawer
-        title="Task修改"
-        width={500}
-        // visible={drawerVisible}
-        mask={false}
-        // onClose={handleDrawerClose}
-      >
-        <Input 
-          // value={modifyInputValue}
-          // onChange={(e) => {setModifyInputValue(e.target.value)}}
-        />
-      </Drawer>
-    </>
+  return (
+    <Table
+      columns={newTaskColumns}
+      dataSource={taskData}
+    />
   )
 }
 
