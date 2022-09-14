@@ -1,18 +1,15 @@
 import { Button, Drawer, Input, Table } from "antd"
 import { ColumnsType } from "antd/lib/table"
+import { values } from "lodash-es"
 import moment, { Moment } from "moment"
 import React from "react"
 
 export interface UnfinishedTask {
-  // TODO: 检查代码 把问号去掉
-  key?: string,
-  // TODO: 检查代码 把问号去掉
-  theTask?: string,
-  theTime?: string,
+  key: string,
+  theTask: string,
+  theTime: Moment,
   deadline?: Moment,
-  state?: string,
-  // TODO: 检查并删除
-  actions?: any, 
+  state: string,
 }
 
 interface Props {
@@ -48,13 +45,20 @@ const UnfinishedTable: React.FC<Props> = (props) => {
       dataIndex: 'theTime',
       key: 'theTime',
       width: '15%',
+      render: (value : Moment ) => {
+        return(
+          <div>
+            {value.format('YYYY-MM-DD HH:mm:ss')}
+          </div>
+        )
+      },
     },
     {
       title: '完成时间',
       dataIndex: 'deadline',
       key: 'deadline',
       width: '15%',
-      render: (value?: Moment) =>{ 
+      render: (value?: Moment) => { 
         return (
           <div>
             {value?.format('YYYY-MM-DD HH:mm:ss').toLocaleString() ?? '-'}

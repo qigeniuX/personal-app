@@ -1,5 +1,6 @@
 import { Button, Table } from "antd"
 import { ColumnsType } from "antd/lib/table"
+import { Moment } from "moment"
 import React, { useEffect, useState } from "react"
 
 interface Props {
@@ -8,11 +9,10 @@ interface Props {
 }
 
 export interface FinishedTaskDataValue {
-  key?: string,
-  theTask?: string,
-  theTime?: string,
-  state?: string,
-  actions?: any, 
+  key: string,
+  theTask: string,
+  theTime: Moment,
+  state: string,
 }
 
 const FinishedTable : React.FC<Props> = (props) => {
@@ -35,6 +35,13 @@ const FinishedTable : React.FC<Props> = (props) => {
       dataIndex: 'theTime',
       width: '15%',
       key: 'theTime',
+      render: (value : Moment ) => {
+        return(
+          <div>
+            {value.format('YYYY-MM-DD HH:mm:ss')}
+          </div>
+        )
+      },
     },
     {
       title: '操作',

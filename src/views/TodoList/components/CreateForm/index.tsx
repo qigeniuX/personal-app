@@ -2,7 +2,7 @@ import { Form, Input } from "antd"
 import React from "react"
 
 export interface FormValue {
-  taskName?: string
+  taskName: string
 }
 
 interface Props {

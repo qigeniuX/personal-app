@@ -40,11 +40,11 @@ const getUnfinishedTaskData = () => {
     
     result[i] = {
       key: currentTask.key,
-      deadline: currentTask.expectedExpiredTime ? moment.unix(currentTask.expectedExpiredTime) : undefined,
+      deadline: currentTask.expectedExpiredTime ? moment(currentTask.expectedExpiredTime) : undefined,
       state: currentTask.origin,
       theTask: currentTask.taskName,
       // TODO: 正确的格式
-      theTime: moment.unix(currentTask.addTime).format(),
+      theTime: moment(currentTask.addTime),
     }
   }
 
@@ -55,7 +55,17 @@ const getUnfinishedTaskData = () => {
 const saveUnfinishedTaskData = (taskData: UnfinishedTask[]) => {
   let unfinishedTaskDataForStorage: UnfinishedTaskDatumForStorage[] = []
 
+  for ( let i = 0; i < taskData.length; i++) { 
+    const currentTask = taskData[i]
 
+    unfinishedTaskDataForStorage[i] = {
+      key: currentTask.key,
+      taskName: currentTask.theTask,
+      addTime: moment(currentTask.theTime).unix(),
+      expectedExpiredTime: moment(currentTask.deadline).unix(),
+      origin: currentTask.state,
+    }
+  }
 
   localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(unfinishedTaskDataForStorage))
 }
@@ -90,16 +100,16 @@ const TodoList = () => {
   }
 
   const handleCreateFormCreate = (value: FormValue) => {
-    if (value === '') { return }
+    if (value.taskName === '') { return }
  
     const addTaskData: UnfinishedTask[] = cloneDeep(unfinishedTaskData)
     const theKey = uuidv4()
 		
-    addTaskData.push({
+    addTaskData.unshift({
       key: theKey,
       theTask: value.taskName,
       state: '新增',
-      theTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+      theTime: moment(),
     })
 
     setUnfinishedTaskData(addTaskData)
@@ -119,8 +129,8 @@ const TodoList = () => {
     const addFinData = newData.splice(index, 1)
     const finData = cloneDeep(finishedTaskData)
   
-    addFinData[0].theTime = moment().format('YYYY-MM-DD HH:mm:ss')
-    finData.push(...addFinData)
+    addFinData[0].theTime = moment()
+    finData.unshift(...addFinData)
 
     setFinishedTaskData(finData)
     setUnfinishedTaskData(newData)
@@ -133,10 +143,10 @@ const TodoList = () => {
     const newData = cloneDeep(unfinishedTaskData)
     const finData = cloneDeep(finishedTaskData)
     const revokeData = finData.splice(index,1)
-    revokeData[0].theTime = moment().format('YYYY-MM-DD HH:mm:ss')
+    revokeData[0].theTime = moment()
     revokeData[0].state = "撤回"
 
-    newData.push(...revokeData)
+    newData.unshift(...revokeData)
 
     setFinishedTaskData(finData)
     setUnfinishedTaskData(newData)
