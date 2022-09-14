@@ -1,14 +1,13 @@
-import { Button, Drawer, Form, Input, Space } from "antd"
+import { Button, Drawer, Form, Input, DatePicker } from "antd"
 import { FieldData } from "rc-field-form/es/interface"
 import React, { useEffect, useState } from "react"
-import { TaskDataValue } from "../UnfinishedTable"
+import { UnfinishedTask } from "../UnfinishedTable"
 
 interface Props {
-  onSave: (value : DrawerFormValue) => void,
   closeDrawer: () => void
-  onChange: (changedFields: unknown) => void
+  onChange: (changedField: FieldData) => void
   isVisible: boolean
-  taskValue?: TaskDataValue
+  taskValue?: UnfinishedTask
 }
 
 export interface DrawerFormValue {
@@ -16,13 +15,9 @@ export interface DrawerFormValue {
 }
 
 const ModifyDrawer : React.FC<Props>= (props) => {
-  const { onChange, onSave, closeDrawer, isVisible, taskValue } = props
+  const { onChange, closeDrawer, isVisible, taskValue } = props
 
   const [form] = Form.useForm<DrawerFormValue>()
-
-  const handleOnclickSaveButton = () => {
-    onSave(form.getFieldsValue())
-  }
 
   const handleCloseDrawer = () => {
     closeDrawer()
@@ -37,8 +32,10 @@ const ModifyDrawer : React.FC<Props>= (props) => {
 
   useEffect(() => {
     // 不加的话form会在绑定之前就被调用 然后报warning
-    if ( taskValue )
+    if ( taskValue ) {
       form.setFieldValue('taskValue', taskValue?.theTask)
+      form.setFieldValue('deadline',taskValue?.deadline)
+    }
   }, [taskValue])
 
   return(
@@ -47,13 +44,6 @@ const ModifyDrawer : React.FC<Props>= (props) => {
       width={500}
       visible={isVisible}
       onClose={handleCloseDrawer}
-      extra={
-        <Space>
-          <Button onClick={handleOnclickSaveButton}>
-            保存
-          </Button>
-        </Space>
-      }
     >
       <Form
         form={form}
@@ -67,6 +57,16 @@ const ModifyDrawer : React.FC<Props>= (props) => {
 					  style={{width:'100%'}}
           />
         </Form.Item>
+
+        <Form.Item
+          name='deadline'
+          label='完成时间'
+        >
+          <DatePicker
+            showTime
+          />
+        </Form.Item>
+
       </Form>
     </Drawer>
   )

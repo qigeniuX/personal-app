@@ -4,10 +4,12 @@ import { v4 as uuidv4 } from 'uuid'
 import { add, cloneDeep } from 'lodash-es'
 import './index.css'
 import CreateForm, { FormValue } from "./components/CreateForm"
-import UnfinishedTable, { TaskDataValue } from "./components/UnfinishedTable"
+import UnfinishedTable, { UnfinishedTask } from "./components/UnfinishedTable"
 import FinishedTable, { FinishedTaskDataValue } from "./components/FinishedTable"
 import ModifyDrawer, { DrawerFormValue } from "./components/ModifyDrawer"
 import { FieldData } from "rc-field-form/es/interface"
+import ExpiredList from "./components/ExpiredList"
+import { format } from "path"
 
 // TODO: 添加一个“上次修改时间” 修改后展示修改成功的时间 如果是添加或者撤回则显示添加或者撤回时间 
 // TODO: 抽屉内添加一个保存按钮，点击确认所有改动。其他方式关闭抽屉则视为取消。
@@ -20,28 +22,77 @@ import { FieldData } from "rc-field-form/es/interface"
 // TODO: 添加一个输入框 输入任务的期望完成时间 分两种 1. 时间跨度 （如 下周一 ~ 下周日） 2. 时间到期 （如24小时之后到期）
 // TODO: 提前完成需求的展示 未完成需求的展示
 // TODO: 完善日常任务(card)功能
+interface UnfinishedTaskDatumForStorage {
+  key: string,
+  taskName: string,
+  addTime: number,
+  expectedExpiredTime?: number,
+  origin: string,
+}
+// TODO: 完成它
+const getUnfinishedTaskData = () => {
+  const unfinishedTaskDataForStorage = JSON.parse(localStorage.getItem('todo_list__unfinished_tasks') || '[]') as UnfinishedTaskDatumForStorage[]
 
-// TODO: 添加类型
+  const result: UnfinishedTask[] = []
+
+  for ( let i = 0; i < unfinishedTaskDataForStorage.length; i++ ) {
+    const currentTask = unfinishedTaskDataForStorage[i]
+    
+    result[i] = {
+      key: currentTask.key,
+      deadline: currentTask.expectedExpiredTime ? moment.unix(currentTask.expectedExpiredTime) : undefined,
+      state: currentTask.origin,
+      theTask: currentTask.taskName,
+      // TODO: 正确的格式
+      theTime: moment.unix(currentTask.addTime).format(),
+    }
+  }
+
+  return result
+}
+
+// TODO: 完成它
+const saveUnfinishedTaskData = (taskData: UnfinishedTask[]) => {
+  let unfinishedTaskDataForStorage: UnfinishedTaskDatumForStorage[] = []
+
+
+
+  localStorage.setItem('todo_list__unfinished_tasks', JSON.stringify(unfinishedTaskDataForStorage))
+}
+
 const TodoList = () => {
   // TODO: 类型
-  const [unfinishedTaskData, setUnfinishedTaskData] = useState<TaskDataValue[]>([])
+  const [unfinishedTaskData, setUnfinishedTaskData] = useState<UnfinishedTask[]>([])
   const [finishedTaskData, setFinishedTaskData] = useState<FinishedTaskDataValue[]>([])
   const [modifyTaskIndex, setModifyTaskIndex] = useState<number>(-1)
   const [isModifyDrawerVisible, setIsModifyDrawerVisible] = useState<boolean>(false)
-  const [taskValue, setTaskValue] = useState<TaskDataValue>()
+  const [taskValue, setTaskValue] = useState<UnfinishedTask>()
   
-  const saveUnfinishedTaskData = (data : TaskDataValue[]) => {
+  const saveUnfinishedTaskData = (data : UnfinishedTask[]) => {
+    const taskData = cloneDeep(data)
+
+    // 1. 遍历taskData里的值
+    // 2. 每次遍历时，把taskData中的元素变为number
+    // 3. 把变化过的元素替换回taskData相同index处
+
+    // for ( let i = 0; i < taskData.length ; i++ ) {
+    //   const timeStamp = moment(taskData[i].deadline).unix()
+
+    //   taskData[i].deadline = timeStamp
+    // }
+
     localStorage.setItem('todo_list__unfinished_tasks',JSON.stringify(data))
   }
 
   const saveFinishedTaskData = (data : FinishedTaskDataValue[]) => {
+  
     localStorage.setItem('todo_list__finished_tasks',JSON.stringify(data))
   }
 
   const handleCreateFormCreate = (value: FormValue) => {
     if (value === '') { return }
  
-    const addTaskData: TaskDataValue[] = cloneDeep(unfinishedTaskData)
+    const addTaskData: UnfinishedTask[] = cloneDeep(unfinishedTaskData)
     const theKey = uuidv4()
 		
     addTaskData.push({
@@ -101,28 +152,35 @@ const TodoList = () => {
     setIsModifyDrawerVisible(true)
   }
 
-  const handleModifyDrawerSave = (value: DrawerFormValue) => {
-    const newData = cloneDeep(unfinishedTaskData)
-    newData[modifyTaskIndex].theTask = value.inputValue
+  // const handleModifyDrawerSave = (value: DrawerFormValue) => {
+  //   const newData = cloneDeep(unfinishedTaskData)
+  //   newData[modifyTaskIndex].theTask = value.inputValue
 
-    setIsModifyDrawerVisible(false)
+  //   setIsModifyDrawerVisible(false)
     
-    setUnfinishedTaskData(newData)
+  //   setUnfinishedTaskData(newData)
 
-    saveUnfinishedTaskData(newData)
-  }
+  //   saveUnfinishedTaskData(newData)
+  // }
 
   const handleDrawerClose = () => {
     setIsModifyDrawerVisible(false)
   }
 
-  const handleDrawerInputChange = (changedField: FieldData) => {
+  const handleDrawerChange = (changedField: FieldData) => {
     const fieldName = (changedField.name as string[])[0]
-
     if (fieldName === 'taskValue') {
       const taskData = cloneDeep(unfinishedTaskData)
-      taskData[modifyTaskIndex].theTask = (changedField as any).value
+      taskData[modifyTaskIndex].theTask = changedField.value
       setUnfinishedTaskData(taskData)
+      return
+    }
+
+    if (fieldName === 'deadline') {
+      const taskData = cloneDeep(unfinishedTaskData)
+      taskData[modifyTaskIndex].deadline = changedField.value
+      setUnfinishedTaskData(taskData)
+      return
     }
   }
 
@@ -133,7 +191,7 @@ const TodoList = () => {
     if (localStorage.getItem('todo_list__finished_tasks') === null )
       localStorage.setItem('todo_list__finished_tasks', '[]')
     // TODO: 类型  
-    setUnfinishedTaskData(JSON.parse(localStorage.getItem('todo_list__unfinished_tasks')!) as TaskDataValue[])
+    setUnfinishedTaskData(JSON.parse(localStorage.getItem('todo_list__unfinished_tasks')!) as UnfinishedTask[])
     setFinishedTaskData(JSON.parse(localStorage.getItem('todo_list__finished_tasks')!) as FinishedTaskDataValue[])
   }, [])
 
@@ -153,10 +211,11 @@ const TodoList = () => {
       <ModifyDrawer 
         isVisible={isModifyDrawerVisible} 
         taskValue={taskValue}
-        onChange={handleDrawerInputChange}
-        onSave={handleModifyDrawerSave}
+        onChange={handleDrawerChange}
         closeDrawer={handleDrawerClose} 
       />
+
+      {/* <ExpiredList /> */}
 
 
       {/* <Layout>
