@@ -61,7 +61,7 @@ const UnfinishedTable: React.FC<Props> = (props) => {
       render: (value?: Moment) => { 
         return (
           <div>
-            {value?.format('YYYY-MM-DD HH:mm:ss').toLocaleString() ?? '-'}
+            {value?.format('YYYY-MM-DD HH:mm:ss') ?? '-'}
           </div>
         )},
     },
